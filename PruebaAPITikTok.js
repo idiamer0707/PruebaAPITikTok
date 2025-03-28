@@ -110,6 +110,8 @@ async function fetchUserInfo(accessToken) {
 
 
 document.getElementById('loguin').addEventListener('click', () => {
+    localStorage.removeItem('csrfState'); 
+    localStorage.removeItem('accessToken'); 
     loginWithTikTok();
 });
 
