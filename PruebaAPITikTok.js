@@ -1,3 +1,4 @@
+
 const clientKey = 'sbawcifd42tz2khdzw';
 const clientSecret = 'dVjeHjhCGwv7P92ONgarTah0vkY8ztGC'; 
 const redirectUri = 'https://idiamer0707.github.io/PruebaAPITikTok/'; 
@@ -69,28 +70,32 @@ async function fetchAccessToken(authCode) {
     }
 }
 
-
 async function fetchUserInfo(accessToken) {
-    try {
-        const response = await fetch('https://open.tiktokapis.com/v2/user/info/', { 
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json',
-            },
-        });
+  try {
+      const response = await fetch('https://open.tiktokapis.com/v2/user/info/', { 
+          method: 'GET',
+          headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+          },
+      });
 
-        const data = await response.json();
-        if (data && data.data) { 
-            console.log('Información del usuario:', data.data);
-            const followers = data.data.follower_count;
-            document.getElementById('seguidores').innerText = `Número de seguidores: ${followers}`;
-        } else {
-            console.error('Error al obtener la información del usuario:', data);
-        }
-    } catch (error) {
-        console.error('Error al obtener la información del usuario:', error);
-    }
+      if (!response.ok) {
+          console.error('Error en la solicitud:', response.status, response.statusText);
+          return;
+      }
+
+      const data = await response.json();
+      if (data && data.data) { 
+          console.log('Información del usuario:', data.data);
+          const followers = data.data.follower_count;
+          document.getElementById('seguidores').innerText = `Número de seguidores: ${followers}`;
+      } else {
+          console.error('Error al obtener la información del usuario:', data);
+      }
+  } catch (error) {
+      console.error('Error al obtener la información del usuario:', error);
+  }
 }
 
 
