@@ -1,7 +1,6 @@
 const clientKey = 'sbawcifd42tz2khdzw';
 const clientSecret = 'dVjeHjhCGwv7P92ONgarTah0vkY8ztGC'; 
 const redirectUri = 'https://idiamer0707.github.io/PruebaAPITikTok/'; 
-const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; 
 
 
 function generateCSRFToken() {
@@ -44,24 +43,24 @@ function handleCallback() {
 
 async function fetchAccessToken(authCode) {
     try {
-        const response = await fetch(proxyUrl + 'https://open.tiktokapis.com/v2/oauth/token', { 
+        const response = await fetch('https://open.tiktokapis.com/v2/oauth/token/', { 
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: JSON.stringify({
+            body: new URLSearchParams({
                 client_key: clientKey,
                 client_secret: clientSecret,
                 code: authCode,
                 grant_type: 'authorization_code',
                 redirect_uri: redirectUri,
-            }),
+            }).toString(), 
         });
 
         const data = await response.json();
         if (data.access_token) {
             console.log('Access Token:', data.access_token);
-            fetchUserInfo(data.access_token); // Obtener información del usuario
+            fetchUserInfo(data.access_token); 
         } else {
             console.error('Error al obtener el token:', data);
         }
@@ -73,7 +72,7 @@ async function fetchAccessToken(authCode) {
 
 async function fetchUserInfo(accessToken) {
     try {
-        const response = await fetch(proxyUrl + 'https://open.tiktokapis.com/v2/user/info/', {
+        const response = await fetch('https://open.tiktokapis.com/v2/user/info/', { 
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
