@@ -5,7 +5,7 @@ const redirectUri = 'https://idiamer0707.github.io/PruebaAPITikTok/';
 function generateCSRFToken() {
     let array = new Uint8Array(30);
     const csrfState = Array.from(window.crypto.getRandomValues(array), byte => byte.toString(16)).join('');
-    localStorage.setItem('csrfState', csrfState); // Guardar el token en almacenamiento local
+    localStorage.setItem('csrfState', csrfState); // Guardar el token en almacenamient local
     return csrfState;
 }
 
