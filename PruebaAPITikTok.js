@@ -99,6 +99,8 @@ async function fetchUserInfo(accessToken) {
 
       if (data && data.data) {
           const followers = data.data.user.follower_count; 
+          const image = data.data.user.avatar_url;
+          document.getElementById('image').src = image;
           document.getElementById('seguidores').innerText = `Número de seguidores: ${followers ?? 'No disponible'}`;
       } else {
           console.error('No se encontraron datos válidos en la respuesta.');
@@ -108,13 +110,11 @@ async function fetchUserInfo(accessToken) {
   }
 }
 
-
 document.getElementById('loguin').addEventListener('click', () => {
     localStorage.removeItem('csrfState'); 
     localStorage.removeItem('accessToken'); 
     loginWithTikTok();
 });
-
 
 if (window.location.search.includes('code')) {
     handleCallback();
