@@ -1,12 +1,44 @@
 const clientKey = 'sbawcifd42tz2khdzw'; 
-const redirectUri = encodeURIComponent('https://idiamer0707.github.io/PruebaAPITikTok/');
+const clientSecret = 'dVjeHjhCGwv7P92ONgarTah0vkY8ztGC';
+const redirectUri = 'https://idiamer0707.github.io/PruebaAPITikTok/';
 
-document.getElementById('loguin').addEventListener('click', async () => {
+function generateCSRFToken() {
+    let array = new Uint8Array(30);
+    const csrfState = Array.from(window.crypto.getRandomValues(array), byte => byte.toString(16)).join('');
+    localStorage.setItem('csrfState', csrfState); // Guardar el token en almacenamiento local
+    return csrfState;
+}
 
-  const authUrl = `https://www.tiktok.com/auth/authorize?client_key=${clientKey}&redirect_uri=${redirectUri}&response_type=code&scope=user.info.basic`;
-  window.location.href = authUrl;
+function loginWithTikTok() {
+    const csrfState = generateCSRFToken(); // Generar token
+    const authUrl = `https://www.tiktok.com/auth/authorize?client_key=${clientKey}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=user.info.basic&state=${csrfState}`;
+    window.location.href = authUrl; // Redirigir al usuario
+}
 
-  async function fetchAccessToken(authCode) {
+function handleCallback() {
+    const params = new URLSearchParams(window.location.search);
+    const returnedState = params.get('state');
+    const originalState = localStorage.getItem('csrfState');
+    const authorizationCode = params.get('code');
+
+    
+    if (!returnedState || returnedState !== originalState) {
+        console.error('Error: el token de estado no coincide. Posible ataque CSRF.');
+        return;
+    }
+
+    console.log('Token de estado válido. Continuar con la autenticación.');
+
+    
+    if (authorizationCode) {
+        fetchAccessToken(authorizationCode);
+    } else {
+        console.error('No se recibió un código de autorización.');
+    }
+}
+
+
+async function fetchAccessToken(authCode) {
     try {
         const response = await fetch('https://www.tiktok.com/auth/token', {
             method: 'POST',
@@ -15,7 +47,7 @@ document.getElementById('loguin').addEventListener('click', async () => {
             },
             body: JSON.stringify({
                 client_key: clientKey,
-                client_secret: 'dVjeHjhCGwv7P92ONgarTah0vkY8ztGC', 
+                client_secret: clientSecret,
                 code: authCode,
                 grant_type: 'authorization_code',
                 redirect_uri: redirectUri,
@@ -23,10 +55,21 @@ document.getElementById('loguin').addEventListener('click', async () => {
         });
 
         const data = await response.json();
-        console.log('Access Token:', data.access_token);
-        // Maneja el token aquí (como guardarlo en sesión o usarlo para la API)
+        if (data.access_token) {
+            console.log('Access Token:', data.access_token);
+            // Maneja el token aquí (como almacenarlo o usarlo para API)
+        } else {
+            console.error('Error al obtener el token:', data);
+        }
     } catch (error) {
-      console.error('Error obteniendo el token:', error);
+        console.error('Error durante el intercambio de código por token:', error);
     }
-  }
+}
+
+document.getElementById('loguin').addEventListener('click', () => {
+    loginWithTikTok();
 });
+
+if (window.location.search.includes('code')) {
+    handleCallback();
+}
