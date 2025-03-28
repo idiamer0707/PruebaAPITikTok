@@ -1,4 +1,3 @@
-
 const clientKey = 'sbawcifd42tz2khdzw';
 const clientSecret = 'dVjeHjhCGwv7P92ONgarTah0vkY8ztGC'; 
 const redirectUri = 'https://idiamer0707.github.io/PruebaAPITikTok/'; 
@@ -61,6 +60,7 @@ async function fetchAccessToken(authCode) {
         const data = await response.json();
         if (data.access_token) {
             console.log('Access Token:', data.access_token);
+            console.log('Scope del token:', data.scope);
             fetchUserInfo(data.access_token); 
         } else {
             console.error('Error al obtener el token:', data);
