@@ -72,7 +72,9 @@ async function fetchAccessToken(authCode) {
 
 async function fetchUserInfo(accessToken) {
   try {
-      const response = await fetch('https://open.tiktokapis.com/v2/user/info/', { 
+      console.log('Intentando obtener información del usuario con el token:', accessToken);
+
+      const response = await fetch('https://open.tiktokapis.com/v2/user/info/', {
           method: 'GET',
           headers: {
               'Authorization': `Bearer ${accessToken}`,
@@ -80,18 +82,23 @@ async function fetchUserInfo(accessToken) {
           },
       });
 
+      console.log('Código de estado de la respuesta:', response.status);
+      console.log('Texto de estado de la respuesta:', response.statusText);
+
       if (!response.ok) {
           console.error('Error en la solicitud:', response.status, response.statusText);
           return;
       }
 
       const data = await response.json();
-      if (data && data.data) { 
-          console.log('Información del usuario:', data.data);
-          const followers = data.data.follower_count;
-          document.getElementById('seguidores').innerText = `Número de seguidores: ${followers}`;
+      console.log('Respuesta completa del servidor:', data); 
+
+      if (data && data.data) {
+          console.log('Datos del usuario:', data.data);
+          const followers = data.data.follower_count; 
+          document.getElementById('seguidores').innerText = `Número de seguidores: ${followers ?? 'No disponible'}`;
       } else {
-          console.error('Error al obtener la información del usuario:', data);
+          console.error('Error al obtener datos válidos del usuario.');
       }
   } catch (error) {
       console.error('Error al obtener la información del usuario:', error);
