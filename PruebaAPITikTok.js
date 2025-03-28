@@ -1,6 +1,7 @@
-const clientKey = 'sbawcifd42tz2khdzw'; 
-const clientSecret = 'dVjeHjhCGwv7P92ONgarTah0vkY8ztGC';
+const clientKey = 'sbawcifd42tz2khdzw';
+const clientSecret = 'dVjeHjhCGwv7P92ONgarTah0vkY8ztGC'; 
 const redirectUri = 'https://idiamer0707.github.io/PruebaAPITikTok/'; 
+const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; 
 
 
 function generateCSRFToken() {
@@ -32,7 +33,7 @@ function handleCallback() {
 
     console.log('Token de estado válido. Continuar con la autenticación.');
 
-    // Si el estado es válido, intercambiar el código por un token de acceso
+    
     if (authorizationCode) {
         fetchAccessToken(authorizationCode);
     } else {
@@ -43,7 +44,7 @@ function handleCallback() {
 
 async function fetchAccessToken(authCode) {
     try {
-        const response = await fetch('https://open.tiktokapis.com/v2/oauth/token', { 
+        const response = await fetch(proxyUrl + 'https://open.tiktokapis.com/v2/oauth/token', { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -72,7 +73,7 @@ async function fetchAccessToken(authCode) {
 
 async function fetchUserInfo(accessToken) {
     try {
-        const response = await fetch('https://open.tiktokapis.com/v2/user/info/', { 
+        const response = await fetch(proxyUrl + 'https://open.tiktokapis.com/v2/user/info/', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
@@ -92,6 +93,7 @@ async function fetchUserInfo(accessToken) {
         console.error('Error al obtener la información del usuario:', error);
     }
 }
+
 
 document.getElementById('loguin').addEventListener('click', () => {
     loginWithTikTok();
