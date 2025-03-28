@@ -1,19 +1,23 @@
+
 const clientKey = 'sbawcifd42tz2khdzw'; 
-const clientSecret = 'dVjeHjhCGwv7P92ONgarTah0vkY8ztGC';
+const clientSecret = 'dVjeHjhCGwv7P92ONgarTah0vkY8ztGC'; 
 const redirectUri = 'https://idiamer0707.github.io/PruebaAPITikTok/';
+
 
 function generateCSRFToken() {
     let array = new Uint8Array(30);
     const csrfState = Array.from(window.crypto.getRandomValues(array), byte => byte.toString(16)).join('');
-    localStorage.setItem('csrfState', csrfState); // Guardar el token en almacenamient local
+    localStorage.setItem('csrfState', csrfState); // Guardar el token en almacenamiento local
     return csrfState;
 }
 
+
 function loginWithTikTok() {
     const csrfState = generateCSRFToken(); // Generar token
-    const authUrl = `https://www.tiktok.com/auth/authorize?client_key=${clientKey}&redirect_uri=${redirectUri}&response_type=code&scope=user.info.basic&state=${csrfState}`;
+    const authUrl = `https://www.tiktok.com/auth/authorize?client_key=${clientKey}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=user.info.basic&state=${csrfState}`;
     window.location.href = authUrl; // Redirigir al usuario
 }
+
 
 function handleCallback() {
     const params = new URLSearchParams(window.location.search);
@@ -37,7 +41,6 @@ function handleCallback() {
     }
 }
 
-
 async function fetchAccessToken(authCode) {
     try {
         const response = await fetch('https://www.tiktok.com/auth/token', {
@@ -57,7 +60,7 @@ async function fetchAccessToken(authCode) {
         const data = await response.json();
         if (data.access_token) {
             console.log('Access Token:', data.access_token);
-            // Maneja el token aquí (como almacenarlo o usarlo para API)
+            fetchUserInfo(data.access_token);
         } else {
             console.error('Error al obtener el token:', data);
         }
@@ -65,6 +68,31 @@ async function fetchAccessToken(authCode) {
         console.error('Error durante el intercambio de código por token:', error);
     }
 }
+
+
+async function fetchUserInfo(accessToken) {
+    try {
+        const response = await fetch('https://open.tiktokapis.com/v1/user/info/', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const data = await response.json();
+        if (data && data.user) {
+            console.log('Información del usuario:', data.user);
+            const followers = data.user.follower_count;
+            document.getElementById('seguidores').innerText = `Número de seguidores: ${followers}`;
+        } else {
+            console.error('Error al obtener la información del usuario:', data);
+        }
+    } catch (error) {
+        console.error('Error al obtener la información del usuario:', error);
+    }
+}
+
 
 document.getElementById('loguin').addEventListener('click', () => {
     loginWithTikTok();
