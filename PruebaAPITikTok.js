@@ -13,8 +13,9 @@ function generateCSRFToken() {
 
 function loginWithTikTok() {
     const csrfState = generateCSRFToken(); // Generar token
-    const authUrl = `https://www.tiktok.com/v2/auth/authorize?client_key=${clientKey}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=user.info.basic&state=${csrfState}`;
+    const authUrl = `https://www.tiktok.com/v2/auth/authorize?client_key=${clientKey}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=user.info.basic,user.info.stats&state=${csrfState}`;
     window.location.href = authUrl; // Redirigir al usuario
+
 }
 
 
