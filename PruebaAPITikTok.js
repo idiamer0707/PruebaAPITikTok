@@ -21,7 +21,6 @@ document.getElementById('loguin').addEventListener('click', async () => {
                 redirect_uri: redirectUri,
             }),
         });
-
         const data = await response.json();
         console.log('Access Token:', data.access_token);
         // Maneja el token aquí (como guardarlo en sesión o usarlo para la API)
