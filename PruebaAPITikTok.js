@@ -104,8 +104,11 @@ async function fetchUserVideos(accessToken) {
             },
         });
 
-        const text = await response.text(); // Obtener texto bruto de la respuesta
-        console.log('Respuesta completa:', text);
+       if (!response.ok) {
+            const errorDetails = await response.text();
+            console.error('Error en la respuesta:', response.status, response.statusText, errorDetails);
+            return;
+        }
         
         const data = await response.json();
         if (data && data.data && data.data.videos) {
