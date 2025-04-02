@@ -119,7 +119,6 @@ async function fetchAllVideos(accessToken, authorId) {
                 max_count: 50,          
                 cursor: cursor          
             };
-
             const response = await fetch(`https://open.tiktokapis.com/v2/research/video/query`, {
                 method: 'POST',
                 mode:`no-cors`,
