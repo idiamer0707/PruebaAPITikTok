@@ -97,6 +97,7 @@ async function fetchUserVideos(accessToken) {
         console.log('Obteniendo videos del usuario autenticado...');
         const response = await fetch(`https://open.tiktokapis.com/v2/video/list`, {
             method: 'GET',
+            mode: 'no-cors',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/json',
