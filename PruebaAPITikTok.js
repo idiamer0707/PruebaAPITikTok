@@ -104,6 +104,9 @@ async function fetchUserVideos(accessToken) {
             },
         });
 
+        const text = await response.text(); // Obtener texto bruto de la respuesta
+        console.log('Respuesta completa:', text);
+        
         const data = await response.json();
         if (data && data.data && data.data.videos) {
             let totalLikes = 0;
