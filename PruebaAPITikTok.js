@@ -49,7 +49,7 @@ async function fetchAccessToken(authCode) {
                 grant_type: 'authorization_code',
                 redirect_uri: redirectUri,
             }).toString(), 
-        });
+        }); 
 
         const data = await response.json();
         if (data.access_token) {
