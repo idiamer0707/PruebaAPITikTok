@@ -1,8 +1,9 @@
 const clientKey = 'sbawcifd42tz2khdzw';
 const clientSecret = 'dVjeHjhCGwv7P92ONgarTah0vkY8ztGC'; 
 const redirectUri = 'https://idiamer0707.github.io/PruebaAPITikTok/'; 
- 
+
 function generateCSRFToken() {
+    localStorage.removeItem('csrfState'); 
     let array = new Uint8Array(30);
     const csrfState = Array.from(window.crypto.getRandomValues(array), byte => byte.toString(16)).join('');
     localStorage.setItem('csrfState', csrfState); // Guardar el token en almacenamiento local
@@ -10,10 +11,11 @@ function generateCSRFToken() {
 }
 
 function loginWithTikTok() {
+    localStorage.removeItem('accessToken');
     const csrfState = generateCSRFToken(); 
     const authUrl = `https://www.tiktok.com/v2/auth/authorize?client_key=${clientKey}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=user.info.basic,user.info.stats,video.list&state=${csrfState}`;
     window.location.href = authUrl; // Redirigir al usuario
-} 
+}
 
 function handleCallback() {
     const params = new URLSearchParams(window.location.search);
@@ -95,7 +97,7 @@ async function fetchUserInfo(accessToken) {
     } catch (error) {
         console.error('Error al obtener la información del usuario:', error);
     }
-} 
+}
 
 async function fetchAllVideos(accessToken, authorId) {
     try {
@@ -173,8 +175,6 @@ async function fetchAllVideos(accessToken, authorId) {
 }
 
 document.getElementById('loguin').addEventListener('click', () => {
-    localStorage.removeItem('csrfState'); 
-    localStorage.removeItem('accessToken');
     loginWithTikTok();
 });
 
