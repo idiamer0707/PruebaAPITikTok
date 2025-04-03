@@ -99,7 +99,7 @@ async function fetchUserInfo(accessToken) {
 
 async function fetchAllVideos(accessToken, authorId) {
 
-    const response = await fetch('https://open.tiktokapis.com/v2/video/list/', {
+    const response = await fetch('https://open.tiktokapis.com/v2/video/list/?fields=cover_image_url,id,title', {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${accessToken}`,
