@@ -99,12 +99,13 @@ async function fetchUserInfo(accessToken) {
 
 async function fetchAllVideos(accessToken, authorId) {
 
-    try {
+     try {
         const requestBody = {
             max_count: 20, // Número máximo de videos por página
         };
+        const fields = 'cover_image_url,id,title,create_time,duration,like_count,comment_count,share_count,view_count'; 
 
-        const response = await fetch('https://open.tiktokapis.com/v2/video/list/?fields=cover_image_url,id,title', {
+        const response = await fetch(`ttps://open.tiktokapis.com/v2/video/list/?fields=${fields}`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
@@ -124,7 +125,7 @@ async function fetchAllVideos(accessToken, authorId) {
 
         if (data && data.data && data.data.videos) {
             data.data.videos.forEach(video => {
-                console.log(`ID: ${video.id}, Título: ${video.title}, Portada: ${video.cover_image_url}`);
+                console.log(`ID: ${video.id}, Título: ${video.title}, Portada: ${video.cover_image_url}, Fecha: ${video.create_time}, Duracion: ${video.duration}, Likes: ${video.like_count}, Comentarios: ${video.comment_count}, Compartidos: ${video.share_count}, Vistas: ${video.view_count}`);
             });
 
             if (data.data.has_more) {
