@@ -98,10 +98,9 @@ async function fetchUserInfo(accessToken) {
 }
 
 async function fetchAllVideos(accessToken, authorId) {
-
-     try {
+    try {
         const requestBody = {
-            max_count: 20, // Número máximo de videos por página
+            max_count: 20, 
         };
         const fields = 'cover_image_url,id,title,create_time,duration,like_count,comment_count,share_count,view_count'; 
 
@@ -124,9 +123,25 @@ async function fetchAllVideos(accessToken, authorId) {
         console.log('Datos obtenidos:', data);
 
         if (data && data.data && data.data.videos) {
+
+            let totalLikes = 0;
+            let totalComments = 0;
+            let totalViews = 0;
+            let totalshares = 0;
+
             data.data.videos.forEach(video => {
                 console.log(`ID: ${video.id}, Título: ${video.title}, Portada: ${video.cover_image_url}, Fecha: ${video.create_time}, Duracion: ${video.duration}, Likes: ${video.like_count}, Comentarios: ${video.comment_count}, Compartidos: ${video.share_count}, Vistas: ${video.view_count}`);
+                totalLikes += parseInt(video.like_count || 0);
+                totalComments += parseInt(video.comment_count || 0);
+                totalViews += parseInt(video.view_count || 0);
+                totalshares += parseInt(video.share_count || 0);
             });
+
+            document.getElementById('likes').innerText = `Número total de likes: ${totalLikes}`;
+            document.getElementById('comments').innerText = `Número total de comentarios: ${totalComments}`;
+            document.getElementById('views').innerText = `Número total de visualizaciones: ${totalViews}`;
+            document.getElementById('shares').innerText = `Número total de compartidos: ${totalshares}`;
+
 
             if (data.data.has_more) {
                 console.log('Hay más videos disponibles. Usa el cursor para obtener la siguiente página.');
@@ -137,79 +152,6 @@ async function fetchAllVideos(accessToken, authorId) {
     } catch (error) {
         console.error('Error al obtener los videos del usuario:', error);
     }
-    
-    // try {
-    //     console.log('Obteniendo todos los videos del usuario autenticado...');
-
-    //     let allVideos = []; 
-    //     let hasMore = true; 
-    //     let cursor = null;
-
-    //     while (hasMore) {
-    //         const requestBody = {
-    //             query: {
-    //                 and: [
-    //                     {
-    //                         operation: "EQ",
-    //                         field_name: "author_id",
-    //                         field_values: [authorId] 
-    //                     }
-    //                 ]
-    //             },
-    //             start_date: "20000101", 
-    //             end_date: "20251231",   
-    //             max_count: 50,          
-    //             cursor: cursor          
-    //         };
-
-    //         const response = await fetch(`https://open.tiktokapis.com/v2/research/video/query`, {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Authorization': `Bearer ${accessToken}`,
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify(requestBody), 
-    //         });
-
-    //         if (!response.ok) {
-    //             const errorDetails = await response.text();
-    //             console.error('Error en la respuesta:', response.status, response.statusText, errorDetails);
-    //             return;
-    //         }
-
-    //         const data = await response.json();
-    //         console.log('Datos obtenidos:', data);
-
-    //         if (data && data.data && data.data.videos) {
-    //             allVideos = allVideos.concat(data.data.videos); 
-    //             cursor = data.data.cursor; 
-    //             hasMore = data.data.has_more; 
-    //         } else {
-    //             console.error('No se encontraron videos válidos en la respuesta.');
-    //             hasMore = false; 
-    //         }
-    //     }
-
-    //     console.log(`Total de videos obtenidos: ${allVideos.length}`);
-
-    //     let totalLikes = 0;
-    //     let totalComments = 0;
-    //     let totalViews = 0;
-
-    //     allVideos.forEach(video => {
-    //         totalLikes += parseInt(video.like_count || 0);
-    //         totalComments += parseInt(video.comment_count || 0);
-    //         totalViews += parseInt(video.play_count || 0);
-    //     });
-
-        
-    //     document.getElementById('likes').innerText = `Número total de likes: ${totalLikes}`;
-    //     document.getElementById('comments').innerText = `Número total de comentarios: ${totalComments}`;
-    //     document.getElementById('views').innerText = `Número total de visualizaciones: ${totalViews}`;
-
-    // } catch (error) {
-    //     console.error('Error al obtener los videos del usuario:', error);
-    // }
 }
 
 document.getElementById('loguin').addEventListener('click', () => {
