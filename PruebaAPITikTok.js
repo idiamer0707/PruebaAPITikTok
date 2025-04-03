@@ -66,7 +66,7 @@ async function fetchAccessToken(authCode) {
 
 async function fetchUserInfo(accessToken) {
     try {
-        const fields = 'open_id,union_id,avatar_url,follower_count'; 
+        const fields = 'open_id,union_id,avatar_url,follower_count,likes_count'; 
         console.log('Intentando obtener información del usuario con el token:', accessToken);
 
         const response = await fetch(`https://open.tiktokapis.com/v2/user/info/?fields=${fields}`, {
@@ -82,8 +82,10 @@ async function fetchUserInfo(accessToken) {
             const openId = data.data.user.open_id; 
             const followers = data.data.user.follower_count; 
             const image = data.data.user.avatar_url;
+            const likes = data.data.user.likes_count;
             document.getElementById('image').src = image;
-            document.getElementById('seguidores').innerText = `Número de seguidores: ${followers ?? 'No disponible'}`;
+            document.getElementById('seguidores').innerText = `Número de seguidores: ${followers}`;
+            document.getElementById('likes').innerText = `Número de likes: ${likes}`;
 
             
             fetchAllVideos(accessToken, openId);
@@ -119,9 +121,9 @@ async function fetchAllVideos(accessToken, authorId) {
                 max_count: 50,          
                 cursor: cursor          
             };
+
             const response = await fetch(`https://open.tiktokapis.com/v2/research/video/query`, {
                 method: 'POST',
-                mode:`no-cors`,
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
@@ -179,4 +181,3 @@ document.getElementById('loguin').addEventListener('click', () => {
 if (window.location.search.includes('code')) {
     handleCallback();
 }
-
