@@ -173,9 +173,9 @@ async function fetchAllVideos(accessToken, authorId) {
 }
 
 document.getElementById('loguin').addEventListener('click', () => {
-    loginWithTikTok();
     localStorage.removeItem('csrfState'); 
     localStorage.removeItem('accessToken');
+    loginWithTikTok();
 });
 
 if (window.location.search.includes('code')) {
