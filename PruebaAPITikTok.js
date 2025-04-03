@@ -99,56 +99,74 @@ async function fetchUserInfo(accessToken) {
 
 async function fetchAllVideos(accessToken, authorId) {
     try {
-        const requestBody = {
-            max_count: 20, 
-        };
-        const fields = 'cover_image_url,id,title,create_time,duration,like_count,comment_count,share_count,view_count'; 
+        console.log('Obteniendo todos los videos del usuario autenticado...');
 
-        const response = await fetch(`https://open.tiktokapis.com/v2/video/list/?fields=${fields}`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody),
-        });
+        let allVideos = []; 
+        let hasMore = true; 
+        let cursor = null; 
 
-        if (!response.ok) {
-            const errorDetails = await response.text();
-            console.error('Error en la respuesta:', response.status, response.statusText, errorDetails);
-            return;
-        }
+        while (hasMore) {
+            
+            const requestBody = {
+                max_count: 20, 
+                cursor: cursor 
+            };
 
-        const data = await response.json();
-        console.log('Datos obtenidos:', data);
+            const fields = 'cover_image_url,id,title,create_time,duration,like_count,comment_count,share_count,view_count';
 
-        if (data && data.data && data.data.videos) {
-
-            let totalLikes = 0;
-            let totalComments = 0;
-            let totalViews = 0;
-            let totalshares = 0;
-
-            data.data.videos.forEach(video => {
-                console.log(`ID: ${video.id}, Título: ${video.title}, Portada: ${video.cover_image_url}, Fecha: ${video.create_time}, Duracion: ${video.duration}, Likes: ${video.like_count}, Comentarios: ${video.comment_count}, Compartidos: ${video.share_count}, Vistas: ${video.view_count}`);
-                totalLikes += parseInt(video.like_count || 0);
-                totalComments += parseInt(video.comment_count || 0);
-                totalViews += parseInt(video.view_count || 0);
-                totalshares += parseInt(video.share_count || 0);
+            const response = await fetch(`https://open.tiktokapis.com/v2/video/list/?fields=${fields}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody),
             });
 
-            document.getElementById('likes').innerText = `Número total de likes: ${totalLikes}`;
-            document.getElementById('comments').innerText = `Número total de comentarios: ${totalComments}`;
-            document.getElementById('views').innerText = `Número total de visualizaciones: ${totalViews}`;
-            document.getElementById('shares').innerText = `Número total de compartidos: ${totalshares}`;
-
-
-            if (data.data.has_more) {
-                console.log('Hay más videos disponibles. Usa el cursor para obtener la siguiente página.');
+            if (!response.ok) {
+                const errorDetails = await response.text();
+                console.error('Error en la respuesta:', response.status, response.statusText, errorDetails);
+                return;
             }
-        } else {
-            console.error('No se encontraron videos válidos en la respuesta.');
+
+            const data = await response.json();
+            console.log('Datos obtenidos:', data);
+
+            if (data && data.data && data.data.videos) {
+               
+                allVideos = allVideos.concat(data.data.videos);
+
+                
+                cursor = data.data.cursor;
+                hasMore = data.data.has_more;
+
+                console.log(`Página obtenida. Videos acumulados: ${allVideos.length}`);
+            } else {
+                console.error('No se encontraron videos válidos en la respuesta.');
+                hasMore = false; 
+            }
         }
+
+        let totalLikes = 0;
+        let totalComments = 0;
+        let totalViews = 0;
+        let totalShares = 0;
+
+        allVideos.forEach(video => {
+            console.log(`ID: ${video.id}, Título: ${video.title}, Portada: ${video.cover_image_url}, Fecha: ${video.create_time}, Duración: ${video.duration}, Likes: ${video.like_count}, Comentarios: ${video.comment_count}, Compartidos: ${video.share_count}, Vistas: ${video.view_count}`);
+            totalLikes += parseInt(video.like_count || 0);
+            totalComments += parseInt(video.comment_count || 0);
+            totalViews += parseInt(video.view_count || 0);
+            totalShares += parseInt(video.share_count || 0);
+        });
+
+        document.getElementById('likes').innerText = `Número total de likes: ${totalLikes}`;
+        document.getElementById('comments').innerText = `Número total de comentarios: ${totalComments}`;
+        document.getElementById('views').innerText = `Número total de visualizaciones: ${totalViews}`;
+        document.getElementById('shares').innerText = `Número total de compartidos: ${totalShares}`;
+
+        console.log('Todos los videos procesados con éxito.');
+
     } catch (error) {
         console.error('Error al obtener los videos del usuario:', error);
     }
