@@ -105,7 +105,7 @@ async function fetchAllVideos(accessToken, authorId) {
         };
         const fields = 'cover_image_url,id,title,create_time,duration,like_count,comment_count,share_count,view_count'; 
 
-        const response = await fetch(`ttps://open.tiktokapis.com/v2/video/list/?fields=${fields}`, {
+        const response = await fetch(`https://open.tiktokapis.com/v2/video/list/?fields=${fields}`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
