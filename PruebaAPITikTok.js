@@ -98,78 +98,89 @@ async function fetchUserInfo(accessToken) {
 }
 
 async function fetchAllVideos(accessToken, authorId) {
-    try {
-        console.log('Obteniendo todos los videos del usuario autenticado...');
 
-        let allVideos = []; 
-        let hasMore = true; 
-        let cursor = null;
+    const response = await fetch('https://open.tiktokapis.com/v2/video/list/', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+        },
+    });
+    const data = await response.json();
+    console.log(data);
+    
+    // try {
+    //     console.log('Obteniendo todos los videos del usuario autenticado...');
 
-        while (hasMore) {
-            const requestBody = {
-                query: {
-                    and: [
-                        {
-                            operation: "EQ",
-                            field_name: "author_id",
-                            field_values: [authorId] 
-                        }
-                    ]
-                },
-                start_date: "20000101", 
-                end_date: "20251231",   
-                max_count: 50,          
-                cursor: cursor          
-            };
+    //     let allVideos = []; 
+    //     let hasMore = true; 
+    //     let cursor = null;
 
-            const response = await fetch(`https://open.tiktokapis.com/v2/research/video/query`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestBody), 
-            });
+    //     while (hasMore) {
+    //         const requestBody = {
+    //             query: {
+    //                 and: [
+    //                     {
+    //                         operation: "EQ",
+    //                         field_name: "author_id",
+    //                         field_values: [authorId] 
+    //                     }
+    //                 ]
+    //             },
+    //             start_date: "20000101", 
+    //             end_date: "20251231",   
+    //             max_count: 50,          
+    //             cursor: cursor          
+    //         };
 
-            if (!response.ok) {
-                const errorDetails = await response.text();
-                console.error('Error en la respuesta:', response.status, response.statusText, errorDetails);
-                return;
-            }
+    //         const response = await fetch(`https://open.tiktokapis.com/v2/research/video/query`, {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Authorization': `Bearer ${accessToken}`,
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify(requestBody), 
+    //         });
 
-            const data = await response.json();
-            console.log('Datos obtenidos:', data);
+    //         if (!response.ok) {
+    //             const errorDetails = await response.text();
+    //             console.error('Error en la respuesta:', response.status, response.statusText, errorDetails);
+    //             return;
+    //         }
 
-            if (data && data.data && data.data.videos) {
-                allVideos = allVideos.concat(data.data.videos); 
-                cursor = data.data.cursor; 
-                hasMore = data.data.has_more; 
-            } else {
-                console.error('No se encontraron videos válidos en la respuesta.');
-                hasMore = false; 
-            }
-        }
+    //         const data = await response.json();
+    //         console.log('Datos obtenidos:', data);
 
-        console.log(`Total de videos obtenidos: ${allVideos.length}`);
+    //         if (data && data.data && data.data.videos) {
+    //             allVideos = allVideos.concat(data.data.videos); 
+    //             cursor = data.data.cursor; 
+    //             hasMore = data.data.has_more; 
+    //         } else {
+    //             console.error('No se encontraron videos válidos en la respuesta.');
+    //             hasMore = false; 
+    //         }
+    //     }
 
-        let totalLikes = 0;
-        let totalComments = 0;
-        let totalViews = 0;
+    //     console.log(`Total de videos obtenidos: ${allVideos.length}`);
 
-        allVideos.forEach(video => {
-            totalLikes += parseInt(video.like_count || 0);
-            totalComments += parseInt(video.comment_count || 0);
-            totalViews += parseInt(video.play_count || 0);
-        });
+    //     let totalLikes = 0;
+    //     let totalComments = 0;
+    //     let totalViews = 0;
+
+    //     allVideos.forEach(video => {
+    //         totalLikes += parseInt(video.like_count || 0);
+    //         totalComments += parseInt(video.comment_count || 0);
+    //         totalViews += parseInt(video.play_count || 0);
+    //     });
 
         
-        document.getElementById('likes').innerText = `Número total de likes: ${totalLikes}`;
-        document.getElementById('comments').innerText = `Número total de comentarios: ${totalComments}`;
-        document.getElementById('views').innerText = `Número total de visualizaciones: ${totalViews}`;
+    //     document.getElementById('likes').innerText = `Número total de likes: ${totalLikes}`;
+    //     document.getElementById('comments').innerText = `Número total de comentarios: ${totalComments}`;
+    //     document.getElementById('views').innerText = `Número total de visualizaciones: ${totalViews}`;
 
-    } catch (error) {
-        console.error('Error al obtener los videos del usuario:', error);
-    }
+    // } catch (error) {
+    //     console.error('Error al obtener los videos del usuario:', error);
+    // }
 }
 
 document.getElementById('loguin').addEventListener('click', () => {
