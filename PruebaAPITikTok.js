@@ -104,7 +104,7 @@ async function fetchAllVideos(accessToken, authorId) {
             max_count: 20, // Número máximo de videos por página
         };
 
-        const response = await fetch('https://open.tiktokapis.com/v2/video/list/', {
+        const response = await fetch('https://open.tiktokapis.com/v2/video/list/?fields=cover_image_url,id,title', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
