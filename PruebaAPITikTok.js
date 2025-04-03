@@ -99,15 +99,43 @@ async function fetchUserInfo(accessToken) {
 
 async function fetchAllVideos(accessToken, authorId) {
 
-    const response = await fetch('https://open.tiktokapis.com/v2/video/list/?fields=cover_image_url,id,title', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-        },
-    });
-    const data = await response.json();
-    console.log(data);
+    try {
+        const requestBody = {
+            max_count: 20, // Número máximo de videos por página
+        };
+
+        const response = await fetch('https://open.tiktokapis.com/v2/video/list/', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+        });
+
+        if (!response.ok) {
+            const errorDetails = await response.text();
+            console.error('Error en la respuesta:', response.status, response.statusText, errorDetails);
+            return;
+        }
+
+        const data = await response.json();
+        console.log('Datos obtenidos:', data);
+
+        if (data && data.data && data.data.videos) {
+            data.data.videos.forEach(video => {
+                console.log(`ID: ${video.id}, Título: ${video.title}, Portada: ${video.cover_image_url}`);
+            });
+
+            if (data.data.has_more) {
+                console.log('Hay más videos disponibles. Usa el cursor para obtener la siguiente página.');
+            }
+        } else {
+            console.error('No se encontraron videos válidos en la respuesta.');
+        }
+    } catch (error) {
+        console.error('Error al obtener los videos del usuario:', error);
+    }
     
     // try {
     //     console.log('Obteniendo todos los videos del usuario autenticado...');
