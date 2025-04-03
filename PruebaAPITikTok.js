@@ -1,7 +1,7 @@
 const clientKey = 'sbawcifd42tz2khdzw';
 const clientSecret = 'dVjeHjhCGwv7P92ONgarTah0vkY8ztGC'; 
 const redirectUri = 'https://idiamer0707.github.io/PruebaAPITikTok/'; 
-
+ 
 function generateCSRFToken() {
     let array = new Uint8Array(30);
     const csrfState = Array.from(window.crypto.getRandomValues(array), byte => byte.toString(16)).join('');
