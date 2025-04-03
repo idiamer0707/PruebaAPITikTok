@@ -95,7 +95,7 @@ async function fetchUserInfo(accessToken) {
     } catch (error) {
         console.error('Error al obtener la información del usuario:', error);
     }
-}
+} 
 
 async function fetchAllVideos(accessToken, authorId) {
     try {
